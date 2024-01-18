@@ -1,4 +1,8 @@
+import java.sql.*;
 import java.util.*;
+
+
+
 
 public class EncryptionProgram {
 
@@ -10,7 +14,7 @@ public class EncryptionProgram {
     private  String line;
     private char[] letters;
     private char[] secretLetter;
-    EncryptionProgram(){
+    EncryptionProgram() throws SQLException {
         scanner = new Scanner(System.in);
         Random random = new Random();
         list = new ArrayList<>();
@@ -19,12 +23,13 @@ public class EncryptionProgram {
 
         newKey();
         askQuestion();
+
     }
     private void askQuestion(){
         while(true){
             System.out.println("*******************************************");
             System.out.println("What Do You Want to do");
-            System.out.println("(N)ewKey,(G)etKey,(E)ncrypt,(D)ecrypt,(Q)uite");
+            System.out.println("(N)ewKey,(G)etKey,(E)ncrypt,(D)ecrypt,(T)acty,(Q)uite");
             char response = Character.toUpperCase(scanner.nextLine().charAt(0));
 
             switch (response){
@@ -43,10 +48,60 @@ public class EncryptionProgram {
                 case 'Q':
                     quite();
                     break;
+                case 'T':
+                    try {
+                        getConnect();
+                        System.out.println("Get Connected");
+                    } catch (SQLException e) {
+                        System.out.println(e);
+                    }
+                    break;
                 default:
                     System.out.println("Invalid Answer :(");
             }
         }
+
+    }
+
+    public void getData(){
+        String url = "jdbc:postgresql://localhost:5432/EncryptData";
+        String user = "postgres";
+        String password = "postgres";
+
+
+        Connection con = null;
+        try {
+            con = DriverManager.getConnection(url,user,password);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            Statement st = con.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+    public void getConnect() throws SQLException {
+        String url = "jdbc:postgresql://localhost:5432/EncryptData";
+        String user = "postgres";
+        String password = "postgres";
+
+
+        Connection con = DriverManager.getConnection(url,user,password);
+        Statement st = con.createStatement();
+        try {
+            String sqlcmd = "INSERT INTO public.\"HashTable\"(\"Text\",\"Code\")VALUES('79P=9^p79P=9^p','Nico')";
+            st.executeUpdate(sqlcmd);
+            System.out.println("Insert Succesfully");
+        }
+        catch (Exception ex){
+            System.out.println(ex);
+        }
+    }
+
+
+    private void dbgetkey(){
 
     }
     private void newKey(){
@@ -92,6 +147,7 @@ public class EncryptionProgram {
         for(char x: letters){
             System.out.print(x);
         }
+        System.out.println(letters);
         System.out.println();
     }
     private void decrypt(){
@@ -114,7 +170,7 @@ public class EncryptionProgram {
         }
         System.out.println();
     }
-    private void quite(){
+    private void quite() {
         System.out.println("Cipher Text Programs Thanks");
         System.exit(0);
     }
